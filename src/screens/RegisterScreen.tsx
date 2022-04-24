@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import {
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -13,19 +14,34 @@ import {WhiteLogo} from '../components/WhiteLogo';
 import {loginStyle} from '../theme/loginTheme';
 import {useForm} from '../hooks/useForm';
 import {StackScreenProps} from '@react-navigation/stack';
+import {AuthContex} from '../context/AuthContext';
 
 interface Props extends StackScreenProps<any, any> {}
 
 export const RegisterScreen = ({navigation}: Props) => {
+  const {signUp, errorMessage, removeError} = useContext(AuthContex);
+
   const {name, email, password, onChange} = useForm({
     name: '',
     email: '',
     password: '',
   });
 
+  useEffect(() => {
+    if (errorMessage.length === 0) return;
+    Alert.alert('Registro Incorrecto', errorMessage, [
+      {text: 'ok', onPress: removeError},
+    ]);
+  }, [errorMessage]);
+
   const onRegister = () => {
     console.log({name, email, password});
     Keyboard.dismiss();
+    signUp({
+      nombre: name,
+      password,
+      correo: email,
+    });
   };
 
   return (
@@ -77,11 +93,10 @@ export const RegisterScreen = ({navigation}: Props) => {
 
           <Text style={loginStyle.label}>Contraseña:</Text>
           <TextInput
+            secureTextEntry={true}
             placeholder="Ingrese su Contraseña"
             placeholderTextColor="rgba(255,255,255,.4)"
-            keyboardType="email-address"
             underlineColorAndroid="white"
-            secureTextEntry
             style={[
               loginStyle.inputField,
               Platform.OS === 'ios' && loginStyle.inputFieldIOS,
@@ -89,8 +104,8 @@ export const RegisterScreen = ({navigation}: Props) => {
             selectionColor="white"
             autoCapitalize="none"
             autoCorrect={false}
-            value={email}
-            onChangeText={value => onChange(value, 'email')}
+            value={password}
+            onChangeText={value => onChange(value, 'password')}
             onSubmitEditing={onRegister}
           />
 
@@ -103,14 +118,12 @@ export const RegisterScreen = ({navigation}: Props) => {
             </TouchableOpacity>
           </View>
 
-          
-            <TouchableOpacity
+          <TouchableOpacity
             style={loginStyle.buttonReturn}
-              activeOpacity={0.8}
-              onPress={() => navigation.replace('LoginScreen')}>
-              <Text style={loginStyle.buttonText}>Login</Text>
-            </TouchableOpacity>
-     
+            activeOpacity={0.8}
+            onPress={() => navigation.replace('LoginScreen')}>
+            <Text style={loginStyle.buttonText}>Login</Text>
+          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </>
