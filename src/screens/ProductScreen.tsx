@@ -184,7 +184,7 @@ export const ProductScreen = ({navigation, route}: Props) => {
               height: 50,
             }}>
             <ActivityIndicator color="#5856d6" size={20} />
-            <Text>Cargando Imgen...</Text>
+            <Text>Cargando Imagen...</Text>
           </View>
         ) : (
           img.length > 0 && (
